@@ -8,24 +8,17 @@ namespace ft
     template <typename _T, typename _Alloc = std::allocator<_T> >
     class vector
     {
-        typedef _T                      value_type;
-        typedef size_t                  size_type;
-        typedef _Alloc                  allocator_type;
-        typedef _T&                     reference;
-        typedef _T*                     pointer;
-		typedef const _T&				const_reference;
-		typedef const _T*               const_pointer;
-
-        private:
-            
-            allocator_type              myAllocator;
-            value_type                  *_begin;
-            value_type                  *_end;
-            value_type                  *_endOfCapacity;
         
 
+        
         public:
-
+			typedef size_t                  size_type;
+			typedef _T                      value_type;
+			typedef _Alloc                  allocator_type;
+			typedef _T&                     reference;
+			typedef _T*                     pointer;
+			typedef const _T&				const_reference;
+			typedef const _T*               const_pointer;
             explicit	vector(const allocator_type& alloc = allocator_type()) : myAllocator(alloc)
             {
                 _begin = NULL;
@@ -75,29 +68,13 @@ namespace ft
                 }
             }
             
-            reference operator[](size_type n)
-            {
-                return (*(_begin + n));
-            }
-
-
-			const_reference operator[](size_type n) const
-            {
-                return (*(_begin + n));
-            }
             vector 		&operator=(vector const &cp)
             {
-                if (this != &cp){
-                    if (_endOfCapacity != _begin)
-                    {
-						pointer it = _begin;
-                        while(it < _end)
-                        {
-                            myAllocator.destroy(it);
-							it++;
-                        }
-                        myAllocator.deallocate(_begin, capacity());
-                    }
+                if (this != &cp)
+				{
+                    destruct_at_end(_begin);
+					if (capacity())
+						myAllocator.deallocate(_begin, capacity());
                     _begin = myAllocator.allocate(cp.size());
                     _end = _begin + cp.size();
                     _endOfCapacity = _end;
@@ -114,7 +91,7 @@ namespace ft
                 return *this;
             }
 
-				// ************* CAPACITY ****************//
+			// ************* CAPACITY ****************//
 
             size_type 	size() const { return( _end - _begin); }
 			size_type	max_size() const {	return myAllocator.max_size(); }
@@ -146,7 +123,7 @@ namespace ft
 			void resize (size_type n, value_type val = value_type())
 			{
 				size_type oldsize = size();
-				if (n < capacity())
+				if (n <= capacity())
 				{
 					pointer it = this->_begin + n;
 					if (n < oldsize)
@@ -174,7 +151,8 @@ namespace ft
 					_endOfCapacity = _begin + rec;
 				}
 			}
-						// **********TOOLS********** //
+
+			// **********TOOLS********** //
 
 			size_type	recommend(size_type __new_size) const
 			{
@@ -222,12 +200,88 @@ namespace ft
                 return (this->myAllocator);
             }
 
-			// EXCEPTIONS //
+			//  ELEMENT ACCESS //
 
+
+			reference at (size_type n)
+			{
+				std::cout << n << " " << size() << '\n';
+				if (n >= size())
+					 __throw_out_of_range();
+				return *(_begin + n);
+			}
+
+			const_reference at (size_type n) const
+			{
+				if (n >= size())
+					__throw_out_of_range();
+				return *(_begin + n);
+			}
+
+			reference operator[](size_type n)
+            {
+                return *(_begin + n);
+            }
+
+			const_reference operator[](size_type n) const
+            {
+                return (*(_begin + n));
+            }
+
+			reference front()
+			{
+				return (*_begin);
+			}
+			const_reference front() const
+			{
+				return (*_begin);
+			}
+			reference back()
+			{
+				return (*(_end - 1));
+			}
+			const_reference back() const
+			{
+				return (*(_end - 1));	
+			}
+
+
+			// MODIFIERS //
+			void assign (size_type n, const value_type& val)
+			{
+				if (n < capacity())
+				{
+					destruct_at_end(_begin);
+					construct_at_end(n, val);
+				}
+				else
+				{
+					destruct_at_end(_begin);
+					if(capacity())
+						myAllocator.deallocate(_begin, capacity());
+					_begin = myAllocator.allocate(n);
+					_endOfCapacity = _begin + n;
+					_end = _begin;
+					construct_at_end(n, val);
+				}
+			}
+
+			// EXCEPTIONS //
+			void	__throw_out_of_range() const
+			{
+				std::__throw_out_of_range("vector");
+			}
 			void	__throw_length_error() const
 			{
 				std::__throw_length_error("vector");
 			}
+            
+            allocator_type              myAllocator;
+            value_type                  *_begin;
+            value_type                  *_end;
+            value_type                  *_endOfCapacity;
+        
+
 
     };
 }

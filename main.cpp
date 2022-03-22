@@ -1,7 +1,7 @@
 #include "vector.hpp"
 
 template<typename T>
-void    printvec(ft::Vector<T> &a)
+void    printvec(ft::vector<T> &a)
 {
     std::cout << "size : " << a.size()<< '\n';
     for(size_t i = 0; i < a.size(); i++)
@@ -11,16 +11,16 @@ void    printvec(ft::Vector<T> &a)
 
 int main()
 {
-    ft::Vector<int> a(5, 8);
-    std::cout << a.capacity() << " " << a.size() << '\n';
-    printvec(a);
-    a.reserve(15);
-    std::cout << a.capacity() << " " << a.size() << '\n';
-    printvec(a);
-    //system("leaks a.out");
-    // std::Vector<int> a(5);
-    // a.resize(9);
-    // std::Vector<int> b(4);
-    // b = a;
-    // std::cout << a.capacity() << " " << b.capacity() << '\n';
+    ft::vector<int> myvector(2);
+
+  myvector[0] = 78;
+  myvector[1] = 16;
+
+  // now front equals 78, and back 16
+
+  myvector.front() -= myvector.back();
+
+  std::cout << "myvector.front() is now " << myvector.front() << '\n';
+
+  return 0;
 }
