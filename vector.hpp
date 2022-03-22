@@ -95,7 +95,12 @@ namespace ft
 
             size_type 	size() const { return( _end - _begin); }
 			size_type	max_size() const {	return myAllocator.max_size(); }
-			size_type 	capacity() const {return _endOfCapacity - _begin;}
+			size_type 	capacity() const 
+			{
+				if (_endOfCapacity != _begin)
+					return _endOfCapacity - _begin;
+				return 0;
+			}
 			bool 		empty() const{return (size() == 0);}
 
 			void reserve (size_type n)
@@ -266,6 +271,76 @@ namespace ft
 				}
 			}
 
+			void push_back (const value_type& val)
+			{
+				if (size() < capacity())
+				{
+					myAllocator.construct(_begin + size(), val);
+					_end++;
+				}
+				else if(!capacity())
+				{
+					_begin = myAllocator.allocate(1);
+					myAllocator.construct(_begin, val);
+					_end = _begin + 1;
+					_endOfCapacity = _end;
+				}
+				else
+				{
+					vector<_T>	cp(*this);
+					destruct_at_end(_begin);
+					myAllocator.deallocate(_begin, capacity());
+					_begin = myAllocator.allocate(recommend(cp.capacity() + 1));
+					pointer it = _begin;
+					pointer	cit = cp._begin;
+					while(cit < cp._end)
+					{
+						myAllocator.construct(it, *cit);
+						it++;
+						cit++;
+					}
+					myAllocator.construct(it++,val);
+					_endOfCapacity = _begin + recommend(cp.capacity() + 1);
+					_end = it;
+				}
+			}
+
+			void pop_back()
+			{
+				if(size())
+				{
+					myAllocator.destroy(_end - 1);
+					_end--;
+				}
+			}
+			void clear()
+			{
+				if (size())
+					destruct_at_end(_begin);
+			}
+			void swap_pointers(pointer &a, pointer &b)
+			{
+				pointer tmp;
+				tmp = a;
+				a = b;
+				b = tmp;
+			}
+			
+			void swap_allocators(allocator_type &a, allocator_type &b)
+			{
+				allocator_type tmp;
+				tmp = a;
+				a = b;
+				b = tmp;
+			}
+			void swap (vector& x)
+			{
+				swap_pointers(_end, x._end);
+				swap_pointers(_begin, x._begin);
+				swap_pointers(_endOfCapacity, x._endOfCapacity);
+				swap_allocators(myAllocator, x.myAllocator);
+			}
+
 			// EXCEPTIONS //
 			void	__throw_out_of_range() const
 			{
@@ -280,7 +355,7 @@ namespace ft
             value_type                  *_begin;
             value_type                  *_end;
             value_type                  *_endOfCapacity;
-        
+	
 
 
     };

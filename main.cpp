@@ -11,16 +11,12 @@ void    printvec(ft::vector<T> &a)
 
 int main()
 {
-    ft::vector<int> myvector(2);
-
-  myvector[0] = 78;
-  myvector[1] = 16;
-
-  // now front equals 78, and back 16
-
-  myvector.front() -= myvector.back();
-
-  std::cout << "myvector.front() is now " << myvector.front() << '\n';
-
+  ft::vector<int> a(5,9);
+  ft::vector<int> b(9,15);
+  a.swap(b);
+  std::cout << a.size() << " " << a.capacity() << '\n';
+  std::cout << b.size() << " " << b.capacity() << '\n';
+  printvec(a);
+  printvec(b);
   return 0;
 }
