@@ -1,13 +1,26 @@
-#include "ft_vector.hpp"
+#include "vector.hpp"
 
+template<typename T>
+void    printvec(ft::Vector<T> &a)
+{
+    std::cout << "size : " << a.size()<< '\n';
+    for(size_t i = 0; i < a.size(); i++)
+        std::cout << "| " << a[i] << " |";
+    std::cout << "\n\n";
+}
 
 int main()
 {
-    ft::vector<int> a(10,5);
-    ft::vector< ft::vector<int> > b(1, a);
-    std::cout << b[0][0] << '\n';
-    b[0] = a;
-    // for(unsigned int i = 0; i < b.size(); i++)
-    std::cout << b[0][0] << '\n';
+    ft::Vector<int> a(5, 8);
+    std::cout << a.capacity() << " " << a.size() << '\n';
+    printvec(a);
+    a.reserve(15);
+    std::cout << a.capacity() << " " << a.size() << '\n';
+    printvec(a);
     //system("leaks a.out");
+    // std::Vector<int> a(5);
+    // a.resize(9);
+    // std::Vector<int> b(4);
+    // b = a;
+    // std::cout << a.capacity() << " " << b.capacity() << '\n';
 }
