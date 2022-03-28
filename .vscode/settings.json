@@ -69,6 +69,7 @@
 		"unordered_map": "cpp",
 		"utility": "cpp",
 		"__cxx_version": "cpp",
-		"memory_resource": "cpp"
+		"memory_resource": "cpp",
+		"queue": "cpp"
 	}
 }
