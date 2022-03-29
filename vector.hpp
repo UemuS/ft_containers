@@ -48,123 +48,7 @@ namespace ft
 			{
 				return iterator(_end);
 			}
-			iterator erase (iterator position)
-			{
-				pointer ret;
-				myAllocator.destroy(_begin + (position - iterator(_begin)));
-				pointer it =_begin + (position - iterator(_begin));
-				ret = it;
-				while(it != _end)
-				{
-					*(it) = *(it + 1);
-					it++;
-				}
-				_end--;
-				return ret;
-			}
-			iterator erase (iterator first, iterator last)
-			{
-				pointer ret;
-				size_type range = last - first;
-				myAllocator.destroy(_begin + (first - iterator(_begin)));
-				pointer it = _begin + (first - iterator(_begin));
-				ret = it;
-
-				while(it + range - 1 != _end)
-				{
-					*(it) = *(it + range);
-					it++;
-				}
-				_end-=range;
-				return ret;
-			}
-
-			iterator insert (iterator position, const value_type& val)
-			{
-				pointer ret;
-				if (_end == _endOfCapacity)
-				{
-					size_type pos = position - iterator(_begin);
-					vector tmp = *this;
-					size_type newCapacity = recommend(size() + 1);
-					destruct_at_end(_begin);
-					myAllocator.deallocate(_begin,capacity());
-					_begin = myAllocator.allocate(newCapacity);
-					_end = _begin + tmp.size() + 1;
-					pointer _it = _begin;
-					_endOfCapacity = _begin + newCapacity;
-					while(_it - _begin < pos)
-					{
-						myAllocator.construct(_it,tmp[_it - _begin]);
-						_it++;
-					}
-					myAllocator.construct(_it,val);
-					ret = _it;
-					_it++;
-					while(_it < _end)
-					{
-						myAllocator.construct(_it,tmp[_it - _begin - 1]);
-						_it++;
-					}
-				}
-				else
-				{
-					pointer tmp = position.base();
-					value_type tmpval = *tmp;
-					_end++;
-					ret = tmp;
-					*tmp++ = val;
-					while(tmp < _end)
-					{
-						value_type tmpval2 = *tmp;
-						*tmp = tmpval;
-						tmp++;
-						tmpval = tmpval2;
-					}
-				}
-				return ret;
-			}
-			iterator insert (iterator position, size_type n, const value_type& val)
-			{
-				pointer ret;
-				if (_end + n > _endOfCapacity)
-				{
-					size_type pos = position - iterator(_begin);
-					vector tmp = *this;
-					size_type newCapacity = recommend(size() + n);
-					destruct_at_end(_begin);
-					myAllocator.deallocate(_begin,capacity());
-					_begin = myAllocator.allocate(newCapacity);
-					_end = _begin + tmp.size();
-					_endOfCapacity = _begin + newCapacity;
-					size_type i = 0;
-					ret = _begin + pos;
-					while(i < n)
-					{
-						insert(_begin + pos,val);
-						i++;
-					}
-					pointer _it = _begin + pos + n;
-					while(_it < _end)
-					{
-						myAllocator.construct(_it,tmp[_it - _begin - n]);
-						_it++;
-					}
-				}
-				else
-				{
-					size_type pos = position - iterator(_begin);
-					pointer _it = _begin + pos;
-					size_type i = 0;
-					ret = _begin + pos;
-					while(i < n)
-					{
-						insert(_begin + pos, val);
-						i++;
-					}
-				}
-				return ret;
-			}
+			
             vector(vector const &a) : myAllocator(a.myAllocator)
             {
                 _begin = myAllocator.allocate(a.size());
@@ -336,6 +220,124 @@ namespace ft
 
 
 			// MODIFIERS //
+			iterator erase (iterator position)
+			{
+				pointer ret;
+				myAllocator.destroy(_begin + (position - iterator(_begin)));
+				pointer it =_begin + (position - iterator(_begin));
+				ret = it;
+				while(it != _end)
+				{
+					*(it) = *(it + 1);
+					it++;
+				}
+				_end--;
+				return ret;
+			}
+			iterator erase (iterator first, iterator last)
+			{
+				pointer ret;
+				size_type range = last - first;
+				myAllocator.destroy(_begin + (first - iterator(_begin)));
+				pointer it = _begin + (first - iterator(_begin));
+				ret = it;
+
+				while(it + range - 1 != _end)
+				{
+					*(it) = *(it + range);
+					it++;
+				}
+				_end-=range;
+				return ret;
+			}
+
+			iterator insert (iterator position, const value_type& val)
+			{
+				pointer ret;
+				if (_end == _endOfCapacity)
+				{
+					size_type pos = position - iterator(_begin);
+					vector tmp = *this;
+					size_type newCapacity = recommend(size() + 1);
+					destruct_at_end(_begin);
+					myAllocator.deallocate(_begin,capacity());
+					_begin = myAllocator.allocate(newCapacity);
+					_end = _begin + tmp.size() + 1;
+					pointer _it = _begin;
+					_endOfCapacity = _begin + newCapacity;
+					while(_it - _begin < pos)
+					{
+						myAllocator.construct(_it,tmp[_it - _begin]);
+						_it++;
+					}
+					myAllocator.construct(_it,val);
+					ret = _it;
+					_it++;
+					while(_it < _end)
+					{
+						myAllocator.construct(_it,tmp[_it - _begin - 1]);
+						_it++;
+					}
+				}
+				else
+				{
+					pointer tmp = position.base();
+					value_type tmpval = *tmp;
+					_end++;
+					ret = tmp;
+					*tmp++ = val;
+					while(tmp < _end)
+					{
+						value_type tmpval2 = *tmp;
+						*tmp = tmpval;
+						tmp++;
+						tmpval = tmpval2;
+					}
+				}
+				return ret;
+			}
+
+			iterator insert (iterator position, size_type n, const value_type& val)
+			{
+				pointer ret;
+				if (_end + n > _endOfCapacity)
+				{
+					size_type pos = position - iterator(_begin);
+					vector tmp = *this;
+					size_type newCapacity = recommend(size() + n);
+					destruct_at_end(_begin);
+					myAllocator.deallocate(_begin,capacity());
+					_begin = myAllocator.allocate(newCapacity);
+					_end = _begin + tmp.size();
+					_endOfCapacity = _begin + newCapacity;
+					size_type i = 0;
+					ret = _begin + pos;
+					while(i < n)
+					{
+						insert(_begin + pos,val);
+						i++;
+					}
+					pointer _it = _begin + pos + n;
+					while(_it < _end)
+					{
+						myAllocator.construct(_it,tmp[_it - _begin - n]);
+						_it++;
+					}
+				}
+				else
+				{
+					size_type pos = position - iterator(_begin);
+					pointer _it = _begin + pos;
+					size_type i = 0;
+					ret = _begin + pos;
+					while(i < n)
+					{
+						insert(_begin + pos, val);
+						i++;
+					}
+				}
+				return ret;
+			}
 			void assign (size_type n, const value_type& val)
 			{
 				if (n < capacity())

@@ -1,4 +1,5 @@
 #include "vector.hpp"
+#include "tools.hpp"
 
 template<typename T>
 void    printvec(std::vector<T> &a)
@@ -9,25 +10,26 @@ void    printvec(std::vector<T> &a)
     std::cout << "\n\n";
 }
 
+// template<class T, typename ft::enable_if<ft::is_integral<T>::value>::type>
+// void do_stuff(T t)
+// {
+//   std::cout << "not integral  " << t << '\n';
+// }
+
+//template<class T >
+void do_stuff(int t)
+{
+  std::cout << "integral  " << t << '\n';
+}
+
+class a
+{
+public:
+    a(int i) : i(i) {}
+    int i;
+};
+
 int main ()
 {
-  std::vector<int> myvector (8,100);
-  std::vector<int>::iterator it;
-
-  it = myvector.begin();
-  it = myvector.insert ( it , 200 );
-
-  myvector.insert (it,10,300);
-
-  // "it" no longer valid, get a new one:
-  it = myvector.begin();
-
-  // std::vector<int> anothervector (2,400);
-  // myvector.insert (it+2,anothervector.begin(),anothervector.end());
-
-  // int myarray [] = { 501,502,503 };
-  // myvector.insert (myvector.begin(), myarray, myarray+3);
-  std::cout << it - myvector.begin() << '\n';
-  printvec(myvector);
-  std::cout << '\n';
+  do_stuff<int>(5);
 }
