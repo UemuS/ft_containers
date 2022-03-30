@@ -10,17 +10,19 @@ void    printvec(std::vector<T> &a)
     std::cout << "\n\n";
 }
 
-// template<class T, typename ft::enable_if<ft::is_integral<T>::value>::type>
-// void do_stuff(T t)
-// {
-//   std::cout << "not integral  " << t << '\n';
-// }
-
-//template<class T >
-void do_stuff(int t)
+void do_stuff(int t, std::string b)
 {
-  std::cout << "integral  " << t << '\n';
+  (void)b;
+  std::cout << "integral  " << &t << '\n';
 }
+
+template<class T>
+void do_stuff(T t, B b, typename ft::enable_if<!ft::is_integral<T>::value>::type* = 0)
+{
+  std::cout << "not integral  " << &t << '\n';
+}
+
+
 
 class a
 {
@@ -31,5 +33,6 @@ public:
 
 int main ()
 {
-  do_stuff<int>(5);
+  a b(42);
+  do_stuff(42, "Ada");
 }
