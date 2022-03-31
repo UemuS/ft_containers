@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "iterator.hpp"
+#include "tools.hpp"
 namespace ft
 {
     template <typename _T, typename _Alloc = std::allocator<_T> >
@@ -15,6 +16,7 @@ namespace ft
 
 			typedef size_t                  							size_type;
 			typedef ft::random_access_it<_T>							iterator;
+			typedef ft::reverse_iterator<iterator>						reverse_iterator;
 			typedef typename allocator_type::reference         			reference;
 			typedef typename allocator_type::pointer                    pointer;
 			typedef typename allocator_type::const_reference			const_reference;
@@ -25,7 +27,16 @@ namespace ft
                 _end = NULL;
                 _endOfCapacity = NULL;
             }
-
+			template <class InputIterator>
+         	vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename ft::enable_if<!ft::is_integral<InputIterator>::value>::type* = 0): myAllocator(alloc)
+			{
+				size_type n = last - first;
+				_begin = myAllocator.allocate(n);
+				_end = _begin + n;
+				_endOfCapacity = _end;
+				pointer _it = _begin;
+				_it = std::copy(first, last, _it);
+			}
             vector(size_type size, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()):  myAllocator(alloc)
             {
 				if (max_size() < size)
@@ -43,6 +54,14 @@ namespace ft
 			iterator begin()
 			{
 				return iterator(_begin);
+			}
+			reverse_iterator rbegin()
+			{
+				return reverse_iterator(end());
+			}
+			reverse_iterator rend()
+			{
+				return reverse_iterator(begin());
 			}
 			iterator end()
 			{
@@ -250,7 +269,54 @@ namespace ft
 				_end-=range;
 				return ret;
 			}
-
+			template <class InputIterator>
+    		void insert (iterator position, InputIterator first, InputIterator last, typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = 0)
+			{
+				pointer ret;
+				size_type n = last - first;
+				if (_end + n > _endOfCapacity)
+				{
+					size_type pos = position - iterator(_begin);
+					vector tmp = *this;
+					size_type newCapacity = recommend(size() + n);
+					destruct_at_end(_begin);
+					myAllocator.deallocate(_begin,capacity());
+					_begin = myAllocator.allocate(newCapacity);
+					_end = _begin + tmp.size();
+					_endOfCapacity = _begin + newCapacity;
+					size_type i = 0;
+					ret = _begin + pos;
+					while(i < pos)
+					{
+						myAllocator.construct(_begin + i, tmp._begin[i]);
+						i++;
+					}
+					i = 0;
+					while(i < n)
+					{
+						insert(_begin + pos + i, *(first + i));
+						i++;
+					}
+					pointer _it = _begin + pos + n;
+					while(_it < _end)
+					{
+						myAllocator.construct(_it,tmp[_it - _begin - n]);
+						_it++;
+					}
+				}
+				else
+				{
+					size_type pos = position - iterator(_begin);
+					pointer _it = _begin + pos;
+					size_type i = 0;
+					ret = _begin + pos;
+					while(i < n)
+					{
+						insert(_begin + pos + i, *(first + i));
+						i++;
+					}
+				}
+			}
 			iterator insert (iterator position, const value_type& val)
 			{
 				pointer ret;
@@ -296,7 +362,6 @@ namespace ft
 				}
 				return ret;
 			}
-
 			iterator insert (iterator position, size_type n, const value_type& val)
 			{
 				pointer ret;
@@ -338,12 +403,28 @@ namespace ft
 				}
 				return ret;
 			}
+			template <class InputIterator>
+  			void assign (InputIterator first, InputIterator last, typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = 0)
+			{
+				destruct_at_end(_begin);
+				size_type n = last - first;
+				size_type _Capacity = recommend(n);
+				if (n > capacity())
+				{
+					myAllocator.deallocate(_begin,capacity());
+					_begin = myAllocator.allocate(_Capacity);
+					_endOfCapacity = _begin + _Capacity;
+				}
+				std::copy(first,last,_begin);
+				_end = _begin + n;
+			}
 			void assign (size_type n, const value_type& val)
 			{
 				if (n < capacity())
 				{
 					destruct_at_end(_begin);
 					construct_at_end(n, val);
+					
 				}
 				else
 				{
