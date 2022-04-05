@@ -1,84 +1,140 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   test.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nwakour <nwakour@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/01/06 17:45:42 by nwakour           #+#    #+#             */
+/*   Updated: 2022/03/22 17:06:38 by nwakour          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <queue>
-#include <stack>
-#include <string>
 #include <vector>
-#include <cmath>
-#include <map>
+#include "iterator.hpp"
+#include "vector.hpp"
+#include "tools.hpp"
+// #include "rb_tree.hpp"
+#include <memory>
 #include <set>
-#include <string.h>
-#include <stdlib.h>
-#include <string>
-#include <cstring>
-#include <limits.h>
-#include <unordered_map>
-#define ll long long
-#define MP make_pair
-#define F first
-#define S second
-#define PB push_back
-#define LOOP(i,k,n) for(ll i = k; i < n; i++)
-#define ROOP(i,k,n) for(ll i = k; i >= n; i--)
-using namespace std;
 
+class B {
+public:
+	char *l;
+	int i;
+	B():l(nullptr), i(1) {};
+	B(const int &ex) {
+		this->i = ex;
+		// std::cout << "constuct " << i << "\n";
+		this->l = new char('a');
+	};
+	virtual ~B() {
+		// std::cout << "destroy " << i << "\n";
+		delete this->l;
+		this->l = nullptr;
+	};
+	B (const B& x)
+	{
+		this->i = x.i;
+		this->l = new char('a');
+		std::cout << "copy " << i << "\n";
+	}
+	B &operator=(const B& copy)
+	{
+		this->i = copy.i;
+		this->l = new char('a');
+		std::cout << "assignement " << i << "\n";
+		return (*this);
+	}
+};
 
-// speed of car from two points
-int speed(int x1, int y1, int x2, int y2)
-{
-	return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
-}
-
-//velociry of car based on speed and time
-int velocity(int speed, int time)
-{
-	return speed * time;
-}
-
-//distance between car and distination
-int distance(int x1, int y1, int x2, int y2)
-{
-	return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
-}
-
-//time for car to reach distination
-int time(int speed, int distance)
-{
-	return distance / speed;
-}
-
-//angle of destination from car
-
+// class A : public B {
+// public:
+// 	A():B(){};
+// 	A(const B* ex){
+// 		this->l = new char(*(ex->l));
+// 		this->i = ex->i;
+// 		if (ex->i == -1) throw "n";
+// 	}
+// 	~A() {
+// 		// delete this->l;
+// 		this->l = nullptr;
+// 	};
+// };
 
 int main()
 {
-	int my_car_x; // my car current x coordinate
-	int my_car_y; // my car current y coordinate
-	int my_car_velocity_x; 	// my car velocity in x direction
-	int my_car_velocity_y;	// my car velocity in y direction
-	int enemy_car_x;	// enemy car current x coordinate
-	int enemy_car_y;	// enemy car current y coordinate
-	int enemy_car_velocity_x;	// enemy car velocity in x direction
-	int enemy_car_velocity_y;	// enemy car velocity in y direction
-	int checkpoint_x;	 	// checkpoint x coordinate
-	int checkpoint_y;	 	// checkpoint y coordinate
-	int angle_of_checkpoint_from_my_car; 	// angle of checkpoint from my car
+	std::vector<B> vv;
+	B cp(15);
+	// for (size_t i = 0; i < 10; ++i)
+	// {
+	// 	vv.push_back(B(i + 10));
+	// }
+	
+	// 	for (size_t size = 0; size < 10; ++size)
+	// 	{
+	// 		for (size_t diff = 0; diff < size; ++diff)
+	// 		{
+	// 			for (size_t n = 0; n < vv.size(); ++n)
+	// 			{
+	// 				for (size_t nn = 0; nn < vv.size(); ++nn)
+	// 				{
+	// 					if (n >= nn)
+	// 						continue;
+	// 					for (size_t cap = 0; cap < 10; ++cap)
+	// 					{
+	// 						std::vector<B> v1;
+	// 						v1.reserve(cap);
+	// 						for (size_t i = 0; i < size; ++i)
+	// 						{
+	// 							v1.push_back(B(i));
+	// 						}
+	// 						v1.insert(v1.begin() + diff, vv.begin() + n, vv.begin() + nn);
 
-	int next_dist_x;	// 
-	int next_dist_y;
-	int my_car_thrust; //thrust of my car from 0 to 100
-	int turns;
-	cin >> turns;
-
-	while (turns--)
+	// 						ft::vector<B> v2;
+	// 						v2.reserve(cap);
+	// 						for (size_t i = 0; i < size; ++i)
+	// 						{
+	// 							v2.push_back(B(i));
+	// 						}
+	// 						v2.insert(v2.begin() + diff, vv.begin() + n, vv.begin() + nn);
+	// 						if (v1.size() != v2.size() || v1.capacity() != v2.capacity())
+	// 						{
+	// 							std::cout << "cap/size" << std::endl;
+	// 							std::cout << cap << " "<< size << " " << diff << " " << n << " " << nn << std::endl;
+	// 							return (0);
+	// 						}
+	// 						for (size_t i = 0; i < v1.size(); i++)
+	// 						{
+	// 							if (v1[i].i != v2[i].i)
+	// 							{
+	// 								std::cout << cap << " "<< size << " " << diff << " " << n << " " << nn << std::endl;
+	// 								return (0);
+	// 							}
+								
+	// 						}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+	ft::vector<B> v1;
+	v1.reserve(30);
+	for (size_t i = 0; i < 10; ++i)
 	{
-		cin >> my_car_x >> my_car_y >> enemy_car_x >> enemy_car_y >> checkpoint_x >> checkpoint_y >> my_car_velocity_x >> my_car_velocity_y >> enemy_car_velocity_x >> enemy_car_velocity_y >> angle_of_checkpoint_from_my_car;
-
-		
-		
-		cout << next_dist_x << " " << next_dist_y <<  " " << my_car_thrust <<endl;
+		v1.push_back(B(i));
+		vv.push_back(B(i + 10));
 	}
+	std::cout << "************" << std::endl;
 
-    return(0);
+	v1.insert(v1.begin() + 8, vv.begin(), vv.begin() + 8);
+	std::cout << "************" << std::endl;
+	for (size_t i = 0; i < v1.size(); ++i)
+	{
+		std::cout << v1[i].i << " ";
+		
+	}
+	std::cout << "\n";
+	return(0);
 }

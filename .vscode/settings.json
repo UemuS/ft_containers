@@ -70,6 +70,11 @@
 		"utility": "cpp",
 		"__cxx_version": "cpp",
 		"memory_resource": "cpp",
-		"queue": "cpp"
+		"queue": "cpp",
+		"forward_list": "cpp",
+		"fstream": "cpp",
+		"list": "cpp",
+		"csignal": "cpp",
+		"*.ipp": "cpp"
 	}
 }
