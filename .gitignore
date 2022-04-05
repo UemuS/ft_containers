@@ -1,3 +1,5 @@
 containers_test/
 ft_containers_tests/
 ft_containers-unit-test/
+.vscode/
+a.out.dSYM/
