@@ -15,9 +15,12 @@
 #include "iterator.hpp"
 #include "vector.hpp"
 #include "tools.hpp"
+#include <map>
 // #include "rb_tree.hpp"
 #include <memory>
 #include <set>
+
+std::map<int, int> m;
 
 class B {
 public:

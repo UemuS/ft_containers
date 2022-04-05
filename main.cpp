@@ -2,6 +2,8 @@
 #include "tools.hpp"
 #include "stack.hpp"
 #include <typeinfo>
+#include "map.hpp"
+
 #define EQUAL(x) ((x) ? (std::cout << "\033[1;32mAC\033[0m\n") : (std::cout << "\033[1;31mWA\033[0m\n"))
 template <typename T>
 void printvec(ft::vector<T> &a)
