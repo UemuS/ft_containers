@@ -3,6 +3,7 @@
 #include "stack.hpp"
 #include <typeinfo>
 #include "map.hpp"
+#include "RBT.hpp"
 
 #define EQUAL(x) ((x) ? (std::cout << "\033[1;32mAC\033[0m\n") : (std::cout << "\033[1;31mWA\033[0m\n"))
 template <typename T>
@@ -80,12 +81,17 @@ int main()
     // ft::vector<int>::const_iterator it = b.end();
     // std::cout << ite - it << '\n';
 
-    ft::stack<int> a;
-	ft::stack<int> b;
-	b.push(5);
-	a.push(3);
-	std::cout << a.top() << '\n';
-	std::cout << (a == b) << '\n';
-
-
+    ft::pair<int,int> p(ft::make_pair(1,2));
+	RBTree<int,int> rb;
+	rb.insert(5,6);
+	rb.insert(3,4);
+	rb.insert(1,4);
+	rb.insert(9,4);
+	rb.insert(0,4);
+	rb.insert(10,4);
+	rb.insert(50,4);
+	rb.printNodes(rb.root);
+	std::cout << "**************** << '\n";
+	rb.erase(rb.root);
+	std::cout << rb.getNode(10)->element.value << '\n';
 }
