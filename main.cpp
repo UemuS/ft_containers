@@ -72,6 +72,7 @@ public:
 	};
 };
 
+
 #include <set>
 int main()
 {
@@ -81,17 +82,29 @@ int main()
     // ft::vector<int>::const_iterator it = b.end();
     // std::cout << ite - it << '\n';
 
-    ft::pair<int,int> p(ft::make_pair(1,2));
-	RBTree<int,int> rb;
-	rb.insert(5,6);
-	rb.insert(3,4);
-	rb.insert(1,4);
-	rb.insert(9,4);
-	rb.insert(0,4);
-	rb.insert(10,4);
-	rb.insert(50,4);
-	rb.printNodes(rb.root);
-	std::cout << "**************** << '\n";
-	rb.erase(rb.root);
-	std::cout << rb.getNode(10)->element.value << '\n';
+    ft::pair <int,int> a;
+	ft::pair <int,int> b;
+	a.first = 1;
+	a.second = 2;
+	RBTree<int, ft::pair<int,int> > c;
+	// c.insert(1, ft::make_pair(1,5));
+	// c.insert(a.first, a);
+	// c.insert(2,ft::make_pair(2,9));
+	// c.insert(3,ft::make_pair(3,7));
+	// c.insert(4,ft::make_pair(4,8));
+	// c.insert(0, ft::make_pair(0,0));
+	// c.insert(5,ft::make_pair(5,6));
+	// c.insert(6,ft::make_pair(6,4));
+
+	srand(0);
+	for (int i = 0; i < 1000000; i++)
+	{
+		c.insert(i, ft::make_pair(i,rand()));
+	}
+	for (int i = 0; i < 500000;i++)
+	{
+		c.deleteNode(c.getNode(i));
+	}
+	std::cout << c.depth(c.root) << '\n';
+
 }
