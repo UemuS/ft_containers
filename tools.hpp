@@ -77,10 +77,10 @@ template <class InputIterator1, class InputIterator2, class Compare>
 	public:
 		T first;
 		B second;
-		pair()
+		pair():first(T()),second(B())
 		{
-			first = T();
-			second = B();
+			
+			
 		}
 		template<class U, class V>
 		pair (const pair<U,V>& pr)

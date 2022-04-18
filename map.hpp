@@ -1,5 +1,6 @@
 #pragma once
 #include "tools.hpp"
+#include "RBT.hpp"
 
 namespace ft
 {
@@ -15,6 +16,14 @@ namespace ft
 		typedef _Allocator                               allocator_type;
 		typedef value_type&                              reference;
 		typedef const value_type&                        const_reference;
+		
+		private:
+			RBTree<key_type, value_type, key_compare> *_RBTree;
+			key_compare comp;
+			allocator_type alloc;
+			Node<value_type> *root;
+			int elements;
 	};
+	
 
 }

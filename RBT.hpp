@@ -136,7 +136,7 @@ struct RBTree {
 		
 		void transplant(Node<Pair> *u, Node<Pair> *v)
 		{
-			if (!u->parent)
+			if (u->parent == Null)
 			{
 				root = v;
 			}
@@ -149,10 +149,11 @@ struct RBTree {
 				u->parent->right = v;
 			}
 			v->parent = u->parent;
+			
 		}
 		void deleteFix(Node<Pair> *node)
 		{
-			std::cout << node->element.first << std::endl;
+			
 			Node<Pair> *sibling;
 			while (node != root && node->color == 0)
 			{
@@ -233,12 +234,27 @@ struct RBTree {
 			return node;
 		}
 
-		void deleteNode(T key)
+		void deleteHelper(Node<Pair> *node, T key)
 		{
-			Node<Pair> *z = getNode(key);
-    		Node<Pair> *x;
+			Node<Pair> *z = Null;
 			Node<Pair> *y;
-			
+			Node<Pair> *x;
+			while(node != Null)
+			{
+				if (!Compare()(key, node->element.first) && !Compare()(node->element.first, key))
+				{
+					z = node;
+				}
+				if(Compare()(key, node->element.first))
+				{
+					node = node->left;
+				}
+				else
+				{
+					node = node->right;
+				}
+				
+			}
 			if (z == Null)
 			{
 				return;
@@ -270,11 +286,14 @@ struct RBTree {
 					y->right = z->right;
 					y->right->parent = y;
 				}
+				
 				transplant(z, y);
+				
 				y->left = z->left;
 				y->left->parent = y;
 				y->color = z->color;
 			}
+			// delete z;
 			if (y_original_color == 0)
 			{
 				deleteFix(x);
@@ -416,14 +435,37 @@ struct RBTree {
 			temp->right = node;
 			node->parent = temp;
 		}
-		
-		void print(Node<Pair> *node)
+
+		void deleteNode(T key)
 		{
-			if (node != Null)
+			deleteHelper(root, key);
+		}
+		
+		void printHelper(Node<Pair> *root, std::string indent, bool last)
+		{
+			if (root != Null)
 			{
-				print(node->left);
-				std::cout << node->element.first << " " << node->element.second << std::endl;
-				print(node->right);
+				std::cout << indent;
+				if (last)
+				{
+					std::cout << "\\-";
+					indent += "  ";
+				}
+				else
+				{
+					std::cout << "|-";
+					indent += "| ";
+				}
+				std::cout << root->element.first << " " << root->element.second << std::endl;
+				printHelper(root->left, indent, false);
+				printHelper(root->right, indent, true);
+			}
+		}
+		void print()
+		{
+			if (root)
+			{
+				printHelper(this->root, "", true);
 			}
 		}
 		void clear(Node<Pair> *node)

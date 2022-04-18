@@ -97,18 +97,18 @@ int main()
 	// c.insert(6,ft::make_pair(6,4));
 
 	srand(0);
-	for (int i = 0; i < 10; i++)
+	
+	for (int i = 0; i < 18; i++)
 	{
 		c.insert(i, ft::make_pair(i,rand()));
 	}
-	std::cout << c.root->element.first << '\n';
-	for (int i = 3; i < 9;i++)
+	std::cout << "old root : " << c.root->element.first << '\n';
+	for (int i = 0; i < 5; i++)
 	{
 		c.deleteNode(i);
-		std::cout << "*************************\n";
-		std::cout << c.root->element.first << '\n';
 	}
-	c.print(c.root);
+	std::cout << "new root : " << c.root->element.first << '\n';
+	c.print();
 	std::cout << c.depth(c.root) << '\n';
 
 }
