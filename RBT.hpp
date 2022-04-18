@@ -1,8 +1,6 @@
 #pragma once
 #include <iostream>
 
-
-
 template<typename Pair>
 struct Node {
 	Pair 		element; // key
@@ -13,14 +11,21 @@ struct Node {
 };
 
 
+
 template <class T, class Pair, typename Compare = std::less<T> >
 struct RBTree {
+		Node<Pair> *Null;
 		Node<Pair> *root;
 		int elements;
 	public:
-		RBTree():root(NULL)
+		RBTree()
 		{
 			elements = 0;
+			Null = new Node<Pair>;
+			Null->color = 0;
+			Null->left = NULL;
+			Null->right = NULL;
+			root= Null;
 		}
 		~RBTree()
 		{
@@ -29,7 +34,7 @@ struct RBTree {
 
 		int depth(Node<Pair> *node)
 		{
-			if(node == NULL)
+			if(node == Null)
 			{
 				return 0;
 			}
@@ -43,18 +48,18 @@ struct RBTree {
 		{
 			Node<Pair> *newNode = new Node<Pair>;
 			newNode->element = value;
-			newNode->parent = NULL;
-			newNode->left = NULL;
-			newNode->right = NULL;
+			newNode->parent = Null;
+			newNode->left = Null;
+			newNode->right = Null;
 			newNode->color = 1;
-			if (root == NULL)
+			if (root == Null)
 			{
 				root = newNode;
 				root->color = 0;
 				return;
 			}
 			Node<Pair> *current = root;
-			while (current != NULL)
+			while (current != Null)
 			{
 				if (!Compare()(value.first , current->element.first) && !Compare()(current->element.first, value.first))
 				{
@@ -63,7 +68,7 @@ struct RBTree {
 				}
 				if (Compare()(value.first, current->element.first))
 				{
-					if (current->left == NULL)
+					if (current->left == Null)
 					{
 						current->left = newNode;
 						newNode->parent = current;
@@ -73,7 +78,7 @@ struct RBTree {
 				}
 				else
 				{
-					if (current->right == NULL)
+					if (current->right == Null)
 					{
 						current->right = newNode;
 						newNode->parent = current;
@@ -89,40 +94,79 @@ struct RBTree {
 		Node<Pair> *getNode(T key)
 		{
 			Node<Pair> *current = root;
-			while (current != NULL)
+			while (current != Null)
 			{
-				if (!Compare()(key, current->element.first) && !Compare()(current->element.first, key))
-				{
-					return current;
-				}
 				if (Compare()(key, current->element.first))
 				{
 					current = current->left;
 				}
-				else
+				else if (Compare()(current->element.first, key))
 				{
 					current = current->right;
 				}
+				else
+				{
+					return current;
+				}
 			}
-			return NULL;
+			return Null;
 		}
 
-		void delete_fixup(Node<Pair> *node)
+		Node<Pair> *succesor(Node<Pair> *node)
 		{
+			if (node->right != Null)
+			{
+				node = node->right;
+				while (node->left != Null)
+				{
+					node = node->left;
+				}
+				return node;
+			}
+			else
+			{
+				Node<Pair> *current = node;
+				while (current->parent != Null && current->parent->right == current)
+				{
+					current = current->parent;
+				}
+				return current->parent;
+			}
+		}
+		
+		void transplant(Node<Pair> *u, Node<Pair> *v)
+		{
+			if (!u->parent)
+			{
+				root = v;
+			}
+			else if (u == u->parent->left)
+			{
+				u->parent->left = v;
+			}
+			else
+			{
+				u->parent->right = v;
+			}
+			v->parent = u->parent;
+		}
+		void deleteFix(Node<Pair> *node)
+		{
+			std::cout << node->element.first << std::endl;
 			Node<Pair> *sibling;
 			while (node != root && node->color == 0)
 			{
 				if (node == node->parent->left)
 				{
 					sibling = node->parent->right;
-					if (sibling && sibling->color == 1)
+					if (sibling->color == 1)
 					{
 						sibling->color = 0;
 						node->parent->color = 1;
 						left_rotate(node->parent);
 						sibling = node->parent->right;
 					}
-					if (sibling && sibling->left->color == 0 && sibling->right->color == 0)
+					if (sibling->left->color == 0 && sibling->right->color == 0)
 					{
 						sibling->color = 1;
 						node = node->parent;
@@ -177,81 +221,93 @@ struct RBTree {
 			}
 			node->color = 0;
 		}
+	
 
 
-		Node<Pair> *successor(Node<Pair> *node)
+		Node<Pair> *minimum(Node<Pair> *node)
 		{
-			if (node->right != NULL)
+			while (node->left != Null)
 			{
-				Node<Pair> *current = node->right;
-				while (current->left != NULL)
-				{
-					current = current->left;
-				}
-				return current;
+				node = node->left;
 			}
-			else
-			{
-				Node<Pair> *current = node->parent;
-				Node<Pair> *child = node;
-				while (current != NULL && child == current->right)
-				{
-					child = current;
-					current = current->parent;
-				}
-				return current;
-			}
+			return node;
 		}
-		void deleteNode(Node<Pair> *node)
+
+		void deleteNode(T key)
 		{
-			Node<Pair> *temp;
-			if (node->left == NULL || node->right == NULL)
+			Node<Pair> *z = getNode(key);
+    		Node<Pair> *x;
+			Node<Pair> *y;
+			
+			if (z == Null)
 			{
-				temp = node;
+				return;
+			}
+			y = z;
+			int y_original_color = y->color;
+			if (z->left == Null)
+			{
+				x = z->right;
+				transplant(z, z->right);
+			}
+			else if (z->right == Null)
+			{
+				x = z->left;
+				transplant(z, z->left);
 			}
 			else
 			{
-				temp = successor(node);
-			}
-			Node<Pair> *child;
-			if (temp->left != NULL)
-			{
-				child = temp->left;
-			}
-			else
-			{
-				child = temp->right;
-			}
-			if (child != NULL)
-			{
-				child->parent = temp->parent;
-			}
-			if (temp->parent == NULL)
-			{
-				root = child;
-			}
-			else
-			{
-				if (temp == temp->parent->left)
+				y = minimum(z->right);
+				y_original_color = y->color;
+				x = y->right;
+				if (y->parent == z)
 				{
-					temp->parent->left = child;
+					x->parent = y;
 				}
 				else
 				{
-					temp->parent->right = child;
+					transplant(y, y->right);
+					y->right = z->right;
+					y->right->parent = y;
 				}
+				transplant(z, y);
+				y->left = z->left;
+				y->left->parent = y;
+				y->color = z->color;
 			}
-			if (temp != node)
+			if (y_original_color == 0)
 			{
-				node->element = temp->element;
+				deleteFix(x);
 			}
-			if (temp->color == 0)
-			{
-				delete_fixup(child);
-			}
-			delete temp;
-			elements--;
 		}
+		
+
+
+
+
+		Node<Pair> *predecessor(Node<Pair> *node)
+		{
+			if (node->left != Null)
+			{
+				node = node->left;
+				while (node->right != Null)
+				{
+					node = node->right;
+				}
+				return node;
+			}
+			else
+			{
+				Node<Pair> *current = node;
+				while (current->parent != Null && current->parent->left == current)
+				{
+					current = current->parent;
+				}
+				return current->parent;
+			}
+		}
+		
+
 		void insert_fixup(Node<Pair> *node)
 		{
 			while (node->parent && node->parent->color == 1)
@@ -309,12 +365,12 @@ struct RBTree {
 		{
 			Node<Pair> *temp = node->right;
 			node->right = temp->left;
-			if (temp->left != NULL)
+			if (temp->left != Null)
 			{
 				temp->left->parent = node;
 			}
 			temp->parent = node->parent;
-			if (node->parent == NULL)
+			if (node->parent == Null)
 			{
 				root = temp;
 			}
@@ -334,14 +390,15 @@ struct RBTree {
 		}
 		void right_rotate(Node<Pair> *node)
 		{
+			
 			Node<Pair> *temp = node->left;
 			node->left = temp->right;
-			if (temp->right != NULL)
+			if (temp->right != Null)
 			{
 				temp->right->parent = node;
 			}
 			temp->parent = node->parent;
-			if (node->parent == NULL)
+			if (node->parent == Null)
 			{
 				root = temp;
 			}
@@ -359,19 +416,19 @@ struct RBTree {
 			temp->right = node;
 			node->parent = temp;
 		}
-		void printNodes(Node<Pair> *node)
+		
+		void print(Node<Pair> *node)
 		{
-			if (node == NULL)
+			if (node != Null)
 			{
-				return;
+				print(node->left);
+				std::cout << node->element.first << " " << node->element.second << std::endl;
+				print(node->right);
 			}
-			printNodes(node->left);
-			std::cout << node->element.first << " " << node->element.second << " " << node->color << "\n";
-			printNodes(node->right);
 		}
 		void clear(Node<Pair> *node)
 		{
-			if (node == NULL)
+			if (node == Null)
 			{
 				return;
 			}
@@ -382,7 +439,7 @@ struct RBTree {
 		void clearTree()
 		{
 			clear(root);
-			root = NULL;
+			root = Null;
 			elements = 0;
 		}
 };
