@@ -76,39 +76,7 @@ public:
 #include <set>
 int main()
 {
-    // ft::vector<int> a(5);
-    // ft::vector<int> b(5);
-    // ft::vector<int>::iterator ite = a.begin();
-    // ft::vector<int>::const_iterator it = b.end();
-    // std::cout << ite - it << '\n';
 
-    ft::pair <int,int> a;
-	ft::pair <int,int> b;
-	a.first = 1;
-	a.second = 2;
-	RBTree<int, ft::pair<int,int> > c;
-	// c.insert(1, ft::make_pair(1,5));
-	// c.insert(a.first, a);
-	// c.insert(2,ft::make_pair(2,9));
-	// c.insert(3,ft::make_pair(3,7));
-	// c.insert(4,ft::make_pair(4,8));
-	// c.insert(0, ft::make_pair(0,0));
-	// c.insert(5,ft::make_pair(5,6));
-	// c.insert(6,ft::make_pair(6,4));
-
-	srand(0);
-	
-	for (int i = 0; i < 18; i++)
-	{
-		c.insert(i, ft::make_pair(i,rand()));
-	}
-	std::cout << "old root : " << c.root->element.first << '\n';
-	for (int i = 0; i < 5; i++)
-	{
-		c.deleteNode(i);
-	}
-	std::cout << "new root : " << c.root->element.first << '\n';
-	c.print();
-	std::cout << c.depth(c.root) << '\n';
+    
 
 }

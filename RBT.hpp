@@ -3,7 +3,8 @@
 
 template<typename Pair>
 struct Node {
-	Pair 		element; // key
+	explicit Node(Pair a) : element(a) {}
+	Pair 		element; // pair
 	Node 		*parent;
 	Node 		*left;
 	Node 		*right;
@@ -12,16 +13,20 @@ struct Node {
 
 
 
-template <class T, class Pair, typename Compare = std::less<T> >
+template <class T, class Pair, typename Compare, typename alloc>
 struct RBTree {
 		Node<Pair> *Null;
 		Node<Pair> *root;
 		int elements;
+		Compare comp;
+		allocator_node allocator;
 	public:
 		RBTree()
 		{
+			comp = Compare();
 			elements = 0;
-			Null = new Node<Pair>;
+			Null = allocator.allocate(1);
+			allocator.construct(Null, Pair());
 			Null->color = 0;
 			Null->left = NULL;
 			Null->right = NULL;
@@ -44,10 +49,11 @@ struct RBTree {
 		}
 
 
-		void insert(T key, Pair value)
+		ft::pair<Node<Pair>*, bool> insert(T key, Pair value)
 		{
-			Node<Pair> *newNode = new Node<Pair>;
-			newNode->element = value;
+			Node<Pair> *newNode;
+			newNode = allocator.allocate(1);
+			allocator.construct(newNode, value);
 			newNode->parent = Null;
 			newNode->left = Null;
 			newNode->right = Null;
@@ -56,17 +62,16 @@ struct RBTree {
 			{
 				root = newNode;
 				root->color = 0;
-				return;
+				return ft::make_pair(root, true);
 			}
 			Node<Pair> *current = root;
 			while (current != Null)
 			{
-				if (!Compare()(value.first , current->element.first) && !Compare()(current->element.first, value.first))
+				if (!comp(value , current->element) && !comp(current->element, value))
 				{
-					current->element = value;
-					return;
+					return (ft::make_pair(current, false));
 				}
-				if (Compare()(value.first, current->element.first))
+				if (comp(value, current->element))
 				{
 					if (current->left == Null)
 					{
@@ -89,6 +94,8 @@ struct RBTree {
 			}
 			insert_fixup(newNode);
 			elements++;
+
+			return (ft::make_pair(newNode, true));
 		}
 
 		Node<Pair> *getNode(T key)
@@ -96,11 +103,11 @@ struct RBTree {
 			Node<Pair> *current = root;
 			while (current != Null)
 			{
-				if (Compare()(key, current->element.first))
+				if (comp(key, current->element))
 				{
 					current = current->left;
 				}
-				else if (Compare()(current->element.first, key))
+				else if (comp(current->element, key))
 				{
 					current = current->right;
 				}
@@ -241,11 +248,11 @@ struct RBTree {
 			Node<Pair> *x;
 			while(node != Null)
 			{
-				if (!Compare()(key, node->element.first) && !Compare()(node->element.first, key))
+				if (!comp(key, node->element) && !comp(node->element, key))
 				{
 					z = node;
 				}
-				if(Compare()(key, node->element.first))
+				if(comp(key, node->element))
 				{
 					node = node->left;
 				}
