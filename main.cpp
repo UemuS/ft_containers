@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include "map.hpp"
 #include "RBT.hpp"
+#include "treeiterator.hpp"
 
 #define EQUAL(x) ((x) ? (std::cout << "\033[1;32mAC\033[0m\n") : (std::cout << "\033[1;31mWA\033[0m\n"))
 template <typename T>
@@ -72,30 +73,14 @@ public:
 	};
 };
 
-
+#include <map>
 #include <set>
-int main()
+#define lol ft
+int main ()
 {
+  ft::map<int,int> a;
+  std::map<int,int> b;
+  std::cout << a.max_size() << " " << b.max_size() << '\n';
 
-    ft::pair <int,int> a;
-	ft::pair <int,int> b;
-	a.first = 1;
-	a.second = 2;
-
-	RBTree<int, ft::pair<int,int>, ft::Comp_map<int, ft::pair<int,int>, std::less<int > > , std::allocator<Node<ft::pair<int,int> > > > c;
-	srand(0);
-	
-	for (int i = 0; i < 18; i++)
-	{
-		c.insert(i, ft::make_pair(i,rand()));
-	}
-	std::cout << "old root : " << c.root->element.first << '\n';
-	for (int i = 0; i < 5; i++)
-	{
-		c.deleteNode(i);
-	}
-	std::cout << "new root : " << c.root->element.first << '\n';
-	c.print();
-	std::cout << c.depth(c.root) << '\n';
-
+  return 0;
 }

@@ -1,25 +1,105 @@
 #pragma once
 #include <iostream>
-
+#include "treeiterator.hpp"
+#include "iterator.hpp"
+namespace ft
+{
+	
 template<typename Pair>
 struct Node {
-	explicit Node(Pair a) : element(a) {}
 	Pair 		element; // pair
 	Node 		*parent;
 	Node 		*left;
 	Node 		*right;
 	bool 		color; // 1 is red 0 is black
+	bool 		is_null;
+
+	Node(Pair a = Pair()) : element(a) {}
 };
 
 
+template<typename value_type>
+Node<value_type> *maximum(Node<value_type>  *node)
+{
+	while (node->right && node->right->is_null == false)
+	{
+		node = node->right;
+	}
+	return node;
+}
 
-template <class T, class Pair, typename Compare, typename alloc>
+template<typename value_type>
+Node<value_type> *minimum(Node<value_type> *node)
+{
+	while (node->left  && node->left->is_null == false)
+	{
+		node = node->left;
+	}
+	return node;
+}
+
+template<typename Node_T>
+Node_T*predecessor(Node_T *node)
+{
+	if (node && node->is_null)
+	{
+		return (maximum(node->left));
+	}
+	if (node->left && node->left->is_null == false)
+	{
+		node = node->left;
+		while (node->right && node->right->is_null == false)
+		{
+			node = node->right;
+		}
+		return node;
+	}
+	else
+	{
+		Node_T *current = node;
+		while (current->parent && current->parent->is_null == false && current->parent->left == current)
+		{
+			current = current->parent;
+		}
+		return current->parent;
+	}
+}
+
+template<typename Node_T>
+Node_T *succesor(Node_T *node)
+{
+	if (node->right && node->right->is_null == false)
+	{
+		node = node->right;
+		while (node->left && node->left->is_null == false)
+		{
+			node = node->left;
+		}
+		return node;
+	}
+	else
+	{
+		Node_T *current = node;
+		while (current->parent && current->parent->is_null == false && current->parent->right == current)
+		{
+			current = current->parent;
+		}
+		return current->parent;
+	}
+}
+
+template <class T, class Pair, typename Compare, typename _Alloc >
 struct RBTree {
 		Node<Pair> *Null;
 		Node<Pair> *root;
-		int elements;
+		size_t elements;
 		Compare comp;
+		typedef typename _Alloc::template rebind<Node<Pair> >::other 	alloc;
 		alloc allocator;
+		typedef ft::bin_iterator<Pair> iterator;
+		typedef ft::const_bin_iterator<Pair> const_iterator;
+		typedef ft::reverse_iterator<iterator> reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 	public:
 		RBTree()
 		{
@@ -30,19 +110,34 @@ struct RBTree {
 			Null->color = 0;
 			Null->left = NULL;
 			Null->right = NULL;
+			Null->is_null = 1;
 			root= Null;
 		}
 		RBTree(Compare cm, alloc al)
 		{
 			comp = cm;
 			allocator = al;
+			elements = 0;
 			Null = allocator.allocate(1);
 			allocator.construct(Null, Pair());
 			Null->color = 0;
 			Null->left = NULL;
 			Null->right = NULL;
+			Null->is_null = 1;
 			root = Null;
 		}
+		RBTree(const RBTree &other)
+		{
+			comp = other.comp;
+			Null = allocator.allocate(1);
+			allocator.construct(Null, Pair());
+			Null->color = 0;
+			Null->left = NULL;
+			Null->right = NULL;
+			Null->is_null = 1;
+			root = deepCopy(other.root, Null);
+			elements = other.elements;
+		}	
 		~RBTree()
 		{
 		}
@@ -60,7 +155,7 @@ struct RBTree {
 		}
 
 
-		ft::pair<Node<Pair>*, bool> insert(T key, Pair value)
+		ft::pair<Node<Pair>*, bool> insert(Pair value)
 		{
 			Node<Pair> *newNode;
 			newNode = allocator.allocate(1);
@@ -68,11 +163,14 @@ struct RBTree {
 			newNode->parent = Null;
 			newNode->left = Null;
 			newNode->right = Null;
+			newNode->is_null = 0;
 			newNode->color = 1;
 			if (root == Null)
 			{
 				root = newNode;
 				root->color = 0;
+				Null->left = root;
+				elements++;
 				return ft::make_pair(root, true);
 			}
 			Node<Pair> *current = root;
@@ -130,27 +228,6 @@ struct RBTree {
 			return Null;
 		}
 
-		Node<Pair> *succesor(Node<Pair> *node)
-		{
-			if (node->right != Null)
-			{
-				node = node->right;
-				while (node->left != Null)
-				{
-					node = node->left;
-				}
-				return node;
-			}
-			else
-			{
-				Node<Pair> *current = node;
-				while (current->parent != Null && current->parent->right == current)
-				{
-					current = current->parent;
-				}
-				return current->parent;
-			}
-		}
 		
 		void transplant(Node<Pair> *u, Node<Pair> *v)
 		{
@@ -238,20 +315,87 @@ struct RBTree {
 					}
 				}
 			}
+			Null->left = root;
+			root->parent = Null;
 			node->color = 0;
 		}
 	
-
-
-		Node<Pair> *minimum(Node<Pair> *node)
+		iterator begin()
 		{
-			while (node->left != Null)
-			{
-				node = node->left;
-			}
-			return node;
+			return iterator(minimum<Pair >(root));
 		}
 
+		reverse_iterator rbegin()
+		{
+			return reverse_iterator(maximum<Pair >(root));
+		}
+		reverse_iterator rend()
+		{
+			return reverse_iterator(Null);
+		}
+		iterator end()
+		{
+			return iterator(Null);
+		}
+		const_iterator begin() const
+		{
+			return const_iterator(minimum<Pair >(root));
+		}
+
+		const_iterator rbegin() const
+		{
+			return reverse_iterator(maximum<const Pair >(root));
+		}
+		const_iterator rend() const
+		{
+			return reverse_iterator(Null);
+		}
+		const_iterator end() const
+		{
+			return iterator(Null);
+		}
+		iterator lower_bound(T key) const
+		{
+			Node<Pair> *current = root;
+			Node<Pair> *ret = Null;
+			while (current != Null)
+			{
+				if (!comp(current->element, key))
+				{
+					ret = current;
+					current = current->left;
+				}
+				else
+				{
+					current = current->right;
+				}
+			}
+			return iterator(ret);
+		}
+		iterator upper_bound(T key) const
+		{
+			Node<Pair> *current = root;
+			Node<Pair> *ret = Null;
+			while (current != Null)
+			{
+				if (comp(key, current->element))
+				{
+					ret = current;
+					current = current->left;
+				}
+				else
+				{
+					current = current->right;
+				}
+			}
+			return iterator(ret);
+		}
+		ft::pair<iterator, iterator> equal_range(T key) const
+		{
+			iterator first = lower_bound(key);
+			iterator last = upper_bound(key);
+			return ft::pair<iterator, iterator>(first, last);
+		}
 		void deleteHelper(Node<Pair> *node, T key)
 		{
 			Node<Pair> *z = Null;
@@ -291,7 +435,7 @@ struct RBTree {
 			}
 			else
 			{
-				y = minimum(z->right);
+				y = minimum<Pair >(z->right);
 				y_original_color = y->color;
 				x = y->right;
 				if (y->parent == z)
@@ -312,6 +456,7 @@ struct RBTree {
 				y->color = z->color;
 			}
 			// delete z;
+			elements--;
 			if (y_original_color == 0)
 			{
 				deleteFix(x);
@@ -320,29 +465,7 @@ struct RBTree {
 		
 
 
-
-
-		Node<Pair> *predecessor(Node<Pair> *node)
-		{
-			if (node->left != Null)
-			{
-				node = node->left;
-				while (node->right != Null)
-				{
-					node = node->right;
-				}
-				return node;
-			}
-			else
-			{
-				Node<Pair> *current = node;
-				while (current->parent != Null && current->parent->left == current)
-				{
-					current = current->parent;
-				}
-				return current->parent;
-			}
-		}
+		
 		
 
 		void insert_fixup(Node<Pair> *node)
@@ -396,6 +519,8 @@ struct RBTree {
 				}
 			
 			}
+			Null->left = root;
+			root->parent = Null;
 			root->color = 0;
 		}
 		void left_rotate(Node<Pair> *node)
@@ -454,9 +579,15 @@ struct RBTree {
 			node->parent = temp;
 		}
 
-		void deleteNode(T key)
+		size_t deleteNode(T key)
 		{
+			size_t ret = elements;
 			deleteHelper(root, key);
+			if (ret != elements)
+				return (1);
+			else
+				return (0);
+
 		}
 		
 		void printHelper(Node<Pair> *root, std::string indent, bool last)
@@ -494,7 +625,8 @@ struct RBTree {
 			}
 			clear(node->left);
 			clear(node->right);
-			delete node;
+			allocator.destroy(node);
+			allocator.deallocate(node, 1);
 		}
 		void clearTree()
 		{
@@ -502,4 +634,83 @@ struct RBTree {
 			root = Null;
 			elements = 0;
 		}
+		size_t size() const
+		{
+			return elements;
+		}
+
+		Node<Pair> *deepCopy(Node<Pair> *node, Node<Pair> *parent)
+		{
+			if (node && node->is_null)
+				return Null;
+
+			Node<Pair> *newNode = allocator.allocate(1);
+			allocator.construct(newNode, node->element);
+			if (node->parent == Null)
+				newNode->parent = Null;
+			else
+				newNode->parent = parent;
+			newNode->left = deepCopy(node->left, newNode);
+			newNode->right = deepCopy(node->right, newNode);
+			newNode->color = node->color;
+			newNode->is_null = node->is_null;
+			return newNode;
+		}
+		RBTree &operator=(const RBTree &other)
+		{
+			if (this != &other)
+			{
+				clearTree();
+				root = deepCopy(other.root, Null);
+				elements = other.elements;
+			}
+			return *this;
+		}
+		bool empty() const
+		{
+			return elements == 0;
+		}
+
+		size_t max_size() const
+		{
+			return allocator.max_size();
+		}
+		
 };
+
+template<class T, class Pair, typename Compare, typename alloc>
+bool operator==(const RBTree<T, Pair, Compare, alloc> &lhs, const RBTree<T, Pair, Compare, alloc> &rhs)
+{
+	return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+}
+
+template<class T, class Pair, typename Compare, typename alloc>
+bool operator!=(const RBTree<T, Pair, Compare, alloc> &lhs, const RBTree<T, Pair, Compare, alloc> &rhs)
+{
+	return !(lhs == rhs);
+}
+
+template<class T, class Pair, typename Compare, typename alloc>
+bool operator<(const RBTree<T, Pair, Compare, alloc> &lhs, const RBTree<T, Pair, Compare, alloc> &rhs)
+{
+
+	return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+template<class T, class Pair, typename Compare, typename alloc>
+bool operator>(const RBTree<T, Pair, Compare, alloc> &lhs, const RBTree<T, Pair, Compare, alloc> &rhs)
+{
+	return rhs < lhs;
+}
+template<class T, class Pair, typename Compare, typename alloc>
+bool operator<=(const RBTree<T, Pair, Compare, alloc> &lhs, const RBTree<T, Pair, Compare, alloc> &rhs)
+{
+	return !(lhs > rhs);
+}
+template<class T, class Pair, typename Compare, typename alloc>
+bool operator>=(const RBTree<T, Pair, Compare, alloc> &lhs, const RBTree<T, Pair, Compare, alloc> &rhs)
+{
+	return !(lhs < rhs);
+}
+
+}
+
