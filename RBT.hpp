@@ -19,7 +19,7 @@ struct RBTree {
 		Node<Pair> *root;
 		int elements;
 		Compare comp;
-		allocator_node allocator;
+		alloc allocator;
 	public:
 		RBTree()
 		{
@@ -31,6 +31,17 @@ struct RBTree {
 			Null->left = NULL;
 			Null->right = NULL;
 			root= Null;
+		}
+		RBTree(Compare cm, alloc al)
+		{
+			comp = cm;
+			allocator = al;
+			Null = allocator.allocate(1);
+			allocator.construct(Null, Pair());
+			Null->color = 0;
+			Null->left = NULL;
+			Null->right = NULL;
+			root = Null;
 		}
 		~RBTree()
 		{

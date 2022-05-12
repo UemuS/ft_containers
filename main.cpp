@@ -77,6 +77,25 @@ public:
 int main()
 {
 
-    
+    ft::pair <int,int> a;
+	ft::pair <int,int> b;
+	a.first = 1;
+	a.second = 2;
+
+	RBTree<int, ft::pair<int,int>, ft::Comp_map<int, ft::pair<int,int>, std::less<int > > , std::allocator<Node<ft::pair<int,int> > > > c;
+	srand(0);
+	
+	for (int i = 0; i < 18; i++)
+	{
+		c.insert(i, ft::make_pair(i,rand()));
+	}
+	std::cout << "old root : " << c.root->element.first << '\n';
+	for (int i = 0; i < 5; i++)
+	{
+		c.deleteNode(i);
+	}
+	std::cout << "new root : " << c.root->element.first << '\n';
+	c.print();
+	std::cout << c.depth(c.root) << '\n';
 
 }

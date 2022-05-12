@@ -61,12 +61,19 @@ namespace ft
 					return comp(__x.first, __y.first);
 				}
 		};
-		typedef value_compare value_comp;
+		explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()): _M_t(comp, alloc) {}
+		map(const map& __x): _M_t(__x._M_t) { }
 		
+
+
 	private:
 		 typedef typename _Alloc::template rebind<value_type>::other 	_Pair_alloc_type;
 		 typedef typename _Alloc::value_type                   			_Alloc_value_type;
-		  typedef _Rb_tree<key_type, value_type, key_compare, _Pair_alloc_type> _Rep_type;
+		 typedef RBTree<key_type, value_type, Comp_map<key_type, mapped_type, key_compare>, _Pair_alloc_type> _Rep_type;
+		 _Rep_type _M_t;
+		 key_compare _M_comp;
+		 allocator_type _M_alloc;
+
 	};
 
 }
