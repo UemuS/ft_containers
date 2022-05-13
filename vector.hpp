@@ -284,7 +284,7 @@ namespace ft
 				return ret;
 			}
 			template <class InputIterator>
-    		void insert (iterator position, InputIterator first, InputIterator last, typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = 0)
+    		void insert (iterator position, InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
 			{
 				pointer ret;
 				size_type n = std::distance(first, last);
@@ -452,7 +452,7 @@ namespace ft
 				return ret;
 			}
 			template <class InputIterator>
-  			void assign (InputIterator first, InputIterator last, typename std::enable_if<!std::is_integral<InputIterator>::value, InputIterator>::type* = 0)
+  			void assign (InputIterator first, InputIterator last, typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type* = 0)
 			{
 				destruct_at_end(_begin);
 				size_type n = std::distance(first, last);

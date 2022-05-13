@@ -21,6 +21,10 @@ struct Node {
 template<typename value_type>
 Node<value_type> *maximum(Node<value_type>  *node)
 {
+	if(node->is_null == true)
+	{
+		return node;
+	}
 	while (node->right && node->right->is_null == false)
 	{
 		node = node->right;
@@ -31,6 +35,10 @@ Node<value_type> *maximum(Node<value_type>  *node)
 template<typename value_type>
 Node<value_type> *minimum(Node<value_type> *node)
 {
+	if(node->is_null == true)
+	{
+		return node;
+	}
 	while (node->left  && node->left->is_null == false)
 	{
 		node = node->left;
@@ -140,6 +148,9 @@ struct RBTree {
 		}	
 		~RBTree()
 		{
+			clearTree();
+			allocator.destroy(Null);
+			allocator.deallocate(Null, 1);
 		}
 		
 
@@ -178,6 +189,8 @@ struct RBTree {
 			{
 				if (!comp(value , current->element) && !comp(current->element, value))
 				{
+					allocator.destroy(newNode);
+					allocator.deallocate(newNode, 1);
 					return (ft::make_pair(current, false));
 				}
 				if (comp(value, current->element))
@@ -227,7 +240,27 @@ struct RBTree {
 			}
 			return Null;
 		}
-
+		
+		Node<Pair> *getNode(T key) const
+		{
+			Node<Pair> *current = root;
+			while (current != Null)
+			{
+				if (comp(key, current->element))
+				{
+					current = current->left;
+				}
+				else if (comp(current->element, key))
+				{
+					current = current->right;
+				}
+				else
+				{
+					return current;
+				}
+			}
+			return Null;
+		}
 		
 		void transplant(Node<Pair> *u, Node<Pair> *v)
 		{
@@ -327,11 +360,11 @@ struct RBTree {
 
 		reverse_iterator rbegin()
 		{
-			return reverse_iterator(maximum<Pair >(root));
+			return reverse_iterator(Null);
 		}
 		reverse_iterator rend()
 		{
-			return reverse_iterator(Null);
+			return reverse_iterator(minimum<Pair >(root));
 		}
 		iterator end()
 		{
@@ -342,13 +375,13 @@ struct RBTree {
 			return const_iterator(minimum<Pair >(root));
 		}
 
-		const_iterator rbegin() const
-		{
-			return reverse_iterator(maximum<const Pair >(root));
-		}
-		const_iterator rend() const
+		reverse_iterator rbegin() const
 		{
 			return reverse_iterator(Null);
+		}
+		reverse_iterator rend() const
+		{
+			return reverse_iterator(minimum<Pair >(root));
 		}
 		const_iterator end() const
 		{
@@ -395,6 +428,11 @@ struct RBTree {
 			iterator first = lower_bound(key);
 			iterator last = upper_bound(key);
 			return ft::pair<iterator, iterator>(first, last);
+		}
+
+		alloc get_allocator() const
+		{
+			return alloc();
 		}
 		void deleteHelper(Node<Pair> *node, T key)
 		{
@@ -455,7 +493,8 @@ struct RBTree {
 				y->left->parent = y;
 				y->color = z->color;
 			}
-			// delete z;
+			allocator.destroy(z);
+			allocator.deallocate(z, 1);
 			elements--;
 			if (y_original_color == 0)
 			{
@@ -578,7 +617,7 @@ struct RBTree {
 			temp->right = node;
 			node->parent = temp;
 		}
-
+		
 		size_t deleteNode(T key)
 		{
 			size_t ret = elements;
@@ -674,6 +713,18 @@ struct RBTree {
 		size_t max_size() const
 		{
 			return allocator.max_size();
+		}
+		void swap(RBTree &other)
+		{
+			Node<Pair> *temp = root;
+			root = other.root;
+			other.root = temp;
+			size_t temp2 = elements;
+			elements = other.elements;
+			other.elements = temp2;
+			Node<Pair> *temp3 = Null;
+			Null = other.Null;
+			other.Null = temp3;
 		}
 		
 };

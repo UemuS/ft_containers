@@ -287,11 +287,13 @@ namespace ft
 		}
 		pointer operator->() const
 		{
-			return &(operator*());
+			iterator_type	tmp = _it;
+			return &(*--tmp);
 		}
 		reference operator*() const
 		{
-			return *(_it - 1);
+			iterator_type	tmp = _it;
+			return (*--tmp);
 		}
 		reference operator[](difference_type n) const
 		{

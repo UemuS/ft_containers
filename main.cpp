@@ -78,9 +78,9 @@ public:
 #define lol ft
 int main ()
 {
-  ft::map<int,int> a;
-  std::map<int,int> b;
-  std::cout << a.max_size() << " " << b.max_size() << '\n';
+	lol::map<int, int> const mp;
+	lol::map<int, int>::iterator it = mp.begin(); // <-- error expected
 
-  return 0;
+	(void)it;
+	return (0);
 }

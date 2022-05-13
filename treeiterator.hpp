@@ -3,13 +3,16 @@
 #include <iterator>
 #include <cstddef>
 #include "iterator_traits.hpp"
-// #include "RBT.hpp"
+#include "tools.hpp"
+#include "RBT.hpp"
 
 
 namespace ft
 {
 	template<typename T>
 struct Node;
+template <typename U>
+	struct const_bin_iterator;
 
 	template <typename T>
 	struct bin_iterator
@@ -21,6 +24,9 @@ struct Node;
 			typedef T value_type;
 			typedef T* pointer;
 			typedef T& reference;
+			typedef ptrdiff_t difference_type;
+			typedef std::bidirectional_iterator_tag iterator_category;
+
 			
 
 
@@ -28,7 +34,6 @@ struct Node;
 			bin_iterator() : _it(NULL) {}
 			bin_iterator(Node<T> *ptr) : _it(ptr) {}
 			bin_iterator(const bin_iterator &it) : _it(it._it) {}
-			
 			
 			bin_iterator &operator++()
 			{
@@ -87,7 +92,8 @@ struct Node;
 			typedef const T value_type;
 			typedef const T* pointer;
 			typedef const T& reference;
-			
+			typedef ptrdiff_t difference_type;
+			typedef std::bidirectional_iterator_tag iterator_category;
 
 
 
@@ -125,7 +131,7 @@ struct Node;
 			}
 			pointer operator->() const
 			{
-				return &(operator*());
+				return &(_it->element);
 			}
 			bool operator==(const const_bin_iterator &other) const
 			{
