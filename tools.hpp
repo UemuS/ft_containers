@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "iterator_traits.hpp"
 namespace ft
 {
 	template <class T, T v>

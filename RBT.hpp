@@ -629,33 +629,33 @@ struct RBTree {
 
 		}
 		
-		void printHelper(Node<Pair> *root, std::string indent, bool last)
-		{
-			if (root != Null)
-			{
-				std::cout << indent;
-				if (last)
-				{
-					std::cout << "\\-";
-					indent += "  ";
-				}
-				else
-				{
-					std::cout << "|-";
-					indent += "| ";
-				}
-				std::cout << root->element.first << " " << root->element.second << std::endl;
-				printHelper(root->left, indent, false);
-				printHelper(root->right, indent, true);
-			}
-		}
-		void print()
-		{
-			if (root)
-			{
-				printHelper(this->root, "", true);
-			}
-		}
+		// void printHelper(Node<Pair> *root, std::string indent, bool last)
+		// {
+		// 	if (root != Null)
+		// 	{
+		// 		std::cout << indent;
+		// 		if (last)
+		// 		{
+		// 			std::cout << "\\-";
+		// 			indent += "  ";
+		// 		}
+		// 		else
+		// 		{
+		// 			std::cout << "|-";
+		// 			indent += "| ";
+		// 		}
+		// 		std::cout << root->element.first << " " << root->element.second << std::endl;
+		// 		printHelper(root->left, indent, false);
+		// 		printHelper(root->right, indent, true);
+		// 	}
+		// }
+		// void print()
+		// {
+		// 	if (root)
+		// 	{
+		// 		printHelper(this->root, "", true);
+		// 	}
+		// }
 		void clear(Node<Pair> *node)
 		{
 			if (node == Null)

@@ -11,7 +11,7 @@ namespace ft
 {
 	template<typename T>
 struct Node;
-template <typename U>
+template <typename T>
 	struct const_bin_iterator;
 
 	template <typename T>
@@ -20,7 +20,6 @@ template <typename U>
 		public:
 			typedef Node<T> node_type;
 			typedef node_type* node_pointer;
-
 			typedef T value_type;
 			typedef T* pointer;
 			typedef T& reference;
@@ -82,6 +81,7 @@ template <typename U>
 		private:
 			node_pointer _it;
 	};
+
 	template <typename T>
 	struct const_bin_iterator
 	{

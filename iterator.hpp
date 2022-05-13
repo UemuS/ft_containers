@@ -19,6 +19,7 @@ namespace ft
 	{
 	public:
 		typedef iterator_traits<iterator<std::random_access_iterator_tag, T> > myIt;
+		typedef T iterator_type;
 		typedef typename myIt::value_type value_type;
 		typedef typename myIt::difference_type difference_type;
 		typedef typename myIt::pointer pointer;
@@ -125,6 +126,7 @@ namespace ft
 	class const_random_access_it
 	{
 	public:
+		typedef T iterator_type;
 		typedef iterator_traits<iterator<std::random_access_iterator_tag, const T> > myIt;
 		typedef typename myIt::value_type value_type;
 		typedef typename myIt::difference_type difference_type;
@@ -230,7 +232,7 @@ namespace ft
 	class reverse_iterator
 	{
 	public:
-		typedef Iter iterator_type;
+		typedef Iter 		iterator_type;
 		typedef typename iterator_traits<Iter>::iterator_category iterator_category;
 		typedef typename iterator_traits<Iter>::value_type value_type;
 		typedef typename iterator_traits<Iter>::difference_type difference_type;

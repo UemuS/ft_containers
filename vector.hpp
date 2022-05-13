@@ -261,7 +261,7 @@ namespace ft
 				ret = it;
 				while(it != _end)
 				{
-					*(it) = *(it + 1);
+					myAllocator.construct(it, *(it + 1));
 					it++;
 				}
 				_end--;
@@ -277,10 +277,58 @@ namespace ft
 
 				while(it + range - 1 != _end)
 				{
-					*(it) = *(it + range);
+					myAllocator.construct(it, *(it + range));
 					it++;
 				}
 				_end-=range;
+				return ret;
+			}
+			
+			iterator insert (iterator position, const value_type& val)
+			{
+				pointer ret;
+				if (_end == _endOfCapacity)
+				{
+					
+					long pos = position - iterator(_begin);
+					vector tmp = *this;
+					size_type newCapacity = recommend(size() + 1);
+					destruct_at_end(_begin);
+					myAllocator.deallocate(_begin,capacity());
+					_begin = myAllocator.allocate(newCapacity);
+					_end = _begin + tmp.size() + 1;
+					pointer _it = _begin;
+					_endOfCapacity = _begin + newCapacity;
+					while(_it - _begin < pos)
+					{
+						myAllocator.construct(_it,tmp[_it - _begin]);
+						_it++;
+					}
+					myAllocator.construct(_it,val);
+					ret = _it;
+					_it++;
+					while(_it < _end)
+					{
+						myAllocator.construct(_it,tmp[_it - _begin - 1]);
+						_it++;
+					}
+				}
+				else
+				{
+					
+					size_type pos = position - iterator(_begin);
+					vector tmp = *this;
+					size_type i = pos;
+					_begin[pos] = val;
+					_end++;
+					while(i < tmp.size())
+					{
+						myAllocator.construct(_begin + i + 1,tmp[i]);
+						i++;
+					}
+					ret = _begin + pos;
+					
+				}
 				return ret;
 			}
 			template <class InputIterator>
@@ -288,12 +336,14 @@ namespace ft
 			{
 				pointer ret;
 				size_type n = std::distance(first, last);
+				
 				if (_end + n > _endOfCapacity)
 				{
 					size_type pos = position - iterator(_begin);
 					vector tmp = *this;
 					size_type newCapacity = recommend(size() + n);
 					pointer newBegin = myAllocator.allocate(newCapacity);
+					
 					size_type i = 0;
 					try
 					{
@@ -337,73 +387,22 @@ namespace ft
 				else
 				{
 					size_type pos = position - iterator(_begin);
-					size_type i = 0;
 					vector tmp = *this;
-					ret = _begin + pos;
-					i = pos;
-					destruct_at_end(_begin + i);
-					while(i < pos + n)
+					size_type i = pos;
+					while(first < last)
 					{
 						myAllocator.construct(_begin + i, *(first++));
-						_end++;
 						i++;
 					}
 					i = pos;
 					while(i < tmp.size())
 					{
-						myAllocator.construct(_begin + n + i, tmp[i]);
+						myAllocator.construct(_begin + i + n, tmp[i]);
 						i++;
 					}
+					_end += n;
 				}
 				
-			}
-			iterator insert (iterator position, const value_type& val)
-			{
-				pointer ret;
-				if (_end == _endOfCapacity)
-				{
-					
-					long pos = position - iterator(_begin);
-					vector tmp = *this;
-					size_type newCapacity = recommend(size() + 1);
-					destruct_at_end(_begin);
-					myAllocator.deallocate(_begin,capacity());
-					_begin = myAllocator.allocate(newCapacity);
-					
-					_end = _begin + tmp.size() + 1;
-					pointer _it = _begin;
-					_endOfCapacity = _begin + newCapacity;
-					while(_it - _begin < pos)
-					{
-						myAllocator.construct(_it,tmp[_it - _begin]);
-						_it++;
-					}
-					myAllocator.construct(_it,val);
-					ret = _it;
-					_it++;
-					while(_it < _end)
-					{
-						myAllocator.construct(_it,tmp[_it - _begin - 1]);
-						_it++;
-					}
-				}
-				else
-				{
-					long pos = position - iterator(_begin);
-					value_type tmpval = _begin[pos];
-					_end++;
-					ret = _begin + pos;
-					*(_begin + pos++) = val; 
-					value_type tmpval2;
-					while(_begin + pos < _end)
-					{
-						tmpval2 = _begin[pos];
-						myAllocator.construct(_begin + pos, tmpval);
-						pos++;
-						tmpval = tmpval2;
-					}
-				}
-				return ret;
 			}
 			iterator insert (iterator position, size_type n, const value_type& val)
 			{
@@ -457,13 +456,19 @@ namespace ft
 				destruct_at_end(_begin);
 				size_type n = std::distance(first, last);
 				size_type _Capacity = recommend(n);
+
 				if (n > capacity())
 				{
 					myAllocator.deallocate(_begin,capacity());
 					_begin = myAllocator.allocate(_Capacity);
 					_endOfCapacity = _begin + _Capacity;
 				}
-				std::copy(first,last,_begin);
+				size_type i = 0;
+				while(first != last)
+				{
+					myAllocator.construct(_begin + i, *(first++));
+					i++;
+				}
 				_end = _begin + n;
 			}
 			void assign (size_type n, const value_type& val)
